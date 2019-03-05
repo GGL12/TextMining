@@ -13,7 +13,7 @@ import jieba.posseg as pseg
 #text_test = '这款手机质量好，就是价钱有点贵。'
 # len(list(pseg.cut(cut_words_str)))
 stopwords_path = './data/StopwordsCN.txt'
-data_1_path = './data/data\data1.csv'
+data_1_path = './data/data1.csv'
 data_2_path = './data/data2.csv'
 data_3_path = './data/data3.csv'
 data_4_path = './data/data4.csv'
