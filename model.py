@@ -147,3 +147,38 @@ def XBModel(x_train,x_test,y_train,y_test):
     print("Xgboost网格搜索超参数总计用时: %d s" % (end_time- start_time).seconds)
     
     return grid_model,r2_loss
+
+def PlotResult(model,x_test,y_test):
+    
+    '''预测值\真实值可视化.'''
+    
+    x = [i+1 for i in range(len(y_test))][:100]
+    y_pred = model.predict(x_test)
+    plt.rcParams['font.family'] = ['sans-serif']
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    fig = plt.figure(figsize=(12,6))
+    plt.plot(x,y_test[:100],c='green',label='y_true')
+    plt.plot(x,y_pred[:100],c='red',label='y_pred')
+    plt.legend()
+    plt.xlabel("预测\真实")
+    plt.ylabel("值大小")
+    plt.title("预测值与真实值变化趋势图")
+    plt.show()
+
+
+if __name__ == '__main__':
+    
+    '''
+    三种基本模型：LRmodel、Xgboost、SVM
+    三种基本模式：PCA、PCC、None
+    是否对数据分组：True、False
+    通过以上对数据进行搭配训练。
+    '''
+    model_data = GetModelData()
+    x_train,x_test,y_train,y_test = PreData(model_data,mode='PCA',group=False)
+    lr_model,lr_r2_loss = LRModel(x_train,x_test,y_train,y_test)
+    PlotResult(lr_model,x_test,y_test) 
+    #svm_model,svm_r2_loss,x_pred = SVMModel_(x_train,x_test,y_train,y_test)
+    #PlotResult(svm_model,x_test,y_test)   
+    #xgboost_model,xgboos_r2_loss = XBModel(x_train,x_test,y_train,y_test)
+    #PlotResult(xgboost_model,x_test,y_test)
