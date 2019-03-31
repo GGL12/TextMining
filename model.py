@@ -81,3 +81,69 @@ def PreData(data, mode=None, group=False):
     x = pd.DataFrame(data=StandardScaler().fit_transform(x), columns=columns)
 
     return train_test_split(x, y, test_size=0.3, random_state=0)
+
+def LRModel(x_train,x_test,y_train,y_test):
+    
+    '''训练LR模型.'''
+    
+    model = LinearRegression()
+    start_time = datetime.datetime.now()
+    model.fit(x_train,y_train)
+    end_time = datetime.datetime.now()
+    print("线性回归各参数：")
+    print(model.coef_)
+    print("\n")
+    y_pred = model.predict(x_test)
+    r2_loss = r2_score(y_test,y_pred)
+    print("线性回归的r方值为{}".format(r2_loss))
+    print("LR模型总计用时: %d s" % (end_time- start_time).seconds)
+    
+    return model,r2_loss
+
+
+def SVMModel(x_train,x_test,y_train,y_test):
+    
+    '''SVM模型，采用网格搜索超参数.'''
+    
+    model = SVR()
+    start_time = datetime.datetime.now()
+    #help(SVR)
+    param_grid = {'C': [0.01,0.1,1,10,100],
+                  'gamma': [0.1, 1, 10],
+                  'kernel': ['linear','rbf'],
+                  }
+    #help(GridSearchCV)
+    grid_model= GridSearchCV(model, param_grid, cv=5,scoring='r2',n_jobs=-1)
+    grid_model.fit(x_train,y_train)
+    end_time = datetime.datetime.now()
+    print("SVM最优参数如下：")
+    print(grid_model.best_params_)
+    y_pred = grid_model.predict(x_test)
+    r2_loss = r2_score(y_test,y_pred)
+    print("SVM在验证集上的r方值为{}".format(r2_loss))
+    print("SVM网格搜索超参数总计用时: %d s" % (end_time- start_time).seconds)
+    
+    return grid_model,r2_loss
+
+
+def XBModel(x_train,x_test,y_train,y_test):
+    
+    '''Xgboost模型，采用网格搜索超参数.'''
+    
+    model = xgboost.XGBRegressor(n_jobs=-1)
+    start_time = datetime.datetime.now()
+    param_grid = {'learning_rate': [0.5,0.1,0.05,0.01], 
+                      'n_estimators': [400,600,800,1000,1200,1600], 
+                      'max_depth': [3,4,5], 
+                      }
+    grid_model= GridSearchCV(model, param_grid, cv=5,scoring='r2',n_jobs=-1)
+    grid_model.fit(x_train,y_train)
+    end_time = datetime.datetime.now()
+    print("xgboost最优超参数如下：")
+    print(grid_model.best_params_)
+    y_pred = grid_model.predict(x_test)
+    r2_loss = r2_score(y_test,y_pred)
+    print("xgboost在验证集上的r方值为{}".format(r2_loss))
+    print("Xgboost网格搜索超参数总计用时: %d s" % (end_time- start_time).seconds)
+    
+    return grid_model,r2_loss
